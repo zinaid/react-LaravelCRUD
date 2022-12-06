@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>TUTORIAL</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="tutorial">TUTORIAL</h1>
+<p>First create a new laravel project with command:</p>
+<p><code>composer create-project laravel/laravel crudReact</code></p>
+<p>For this tutorial we are going to use MySql database so we need that service also. We may use for eq. Docker or Xampp (as we are going in this case). Then we change .env file and rename our database as react-crud.</p>
+<p>After that we create model named Task with a command:</p>
+<p><code>php artisan make:model Task -mcr</code></p>
+<p>M means migration, c means controller and r says that our controller has predefined structure with all standard methods and includes.</p>
+<p>Next we will modify our migration for tasks. It will have these columns:</p>
+<pre><code>public function up()
+    {
+        Schema::create('tasks', function (Blueprint $table) {
+            $table-&gt;id();
+            $table-&gt;string('name');
+            $table-&gt;string('description')-&gt;nullable();
+            $table-&gt;string('photo')-&gt;nullable();
+            $table-&gt;integer('status')-&gt;default(0);
+            $table-&gt;integer('level')-&gt;default(0);
+            $table-&gt;timestamps();
+        });
+    }
+</code></pre>
+<p>Next we migrate these tables with <code>php artisan migrate</code>. After this part we have created our database crud-react with the tables inside migrations.</p>
+<p>Now we proceed and install react and react-dom. We do this in our project root directory with this command.</p>
+<pre><code>npm install react@latest react-dom@latest
+</code></pre>
+<p>Our react app will be placed inside resources/js. We will work with jsx files. JSX is a React extension for javascript syntax and is commonly used for writing React components, so we will change our app.js into index.jsx.</p>
+<p>We also use Vite for our assets bundling and as our live server for frontend. And because we decided to use jsx we need to modify vite.config.js to read input from resources/js/index.jsx.</p>
+<pre><code>input: ['resources/css/app.css', 'resources/js/index.jsx'],
+</code></pre>
+<p>Also we need to include react plugin for vite. Next npm command can do that for us:</p>
+<pre><code>npm install --save-dev @vitejs/plugin-react --force
+</code></pre>
+<p>Then we modify vite:</p>
+<pre><code>import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+    plugins: [
+        react(),
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/index.jsx'],
+            refresh: true,
+        }),
+    ],
+});
+</code></pre>
+<p>We have already renamed app.js into index.jsx and it will be our central file for React. We will also create components folder where we will put our React components.</p>
+<p>We create App component as:</p>
+<pre><code>import React from 'react'
+
+const app = () =&gt; {
+  return (
+    &lt;div&gt;
+      &lt;p&gt;This is a div.&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default app
+</code></pre>
+<p>Also, we change index.jsx to:</p>
+<pre><code>import './bootstrap';
+
+import React from 'react';
+import ReactDOM  from 'react-dom/client';
+
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById(&quot;root&quot;));
+root.render(
+  &lt;React.StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/React.StrictMode&gt;
+);
+</code></pre>
+<p>Inside our view welcome.blade.php we delete all body and create one div with id=&quot;root&quot;. Also we include vite in head with these two lines:</p>
+<pre><code>@viteReactRefresh
+@vite(['resources/css/app.css', 'resources/js/index.jsx'])
+</code></pre>
+<p>Next we start our vite server with npm run dev. And after that we should see our message inside App.jsx.</p>
+<p>Next we add some styling to our div inside app.css.</p>
+<p>For all components that are for our tasks we will create subfolder inside components named tasks. Inside we will create first component named Index.jsx.</p>
+<pre><code>import React from 'react'
+
+const Index = () =&gt; {
+  return (
+    &lt;div&gt;
+      
+    &lt;/div&gt;
+  )
+}
+
+export default Index
+</code></pre>
+<p>In Laravel we can create custom error pages eg.404 page that is displayed when we can't find url. We just have to create errors subfolder inside views and inside create blade that corresponds with http error response eg. 404.blade.php.</p>
+<p>Inside js we will create router subfolder and inside a router component.</p>
+<pre><code>import React from 'react'
+import {Routes, Route} from 'react-router-dom'
+import Index from '../components/tasks/Index'
+
+const Router = () =&gt; {
+  return (
+    &lt;div&gt;
+      &lt;Routes&gt;
+        &lt;Route path=&quot;/&quot; element={&lt;Index /&gt;}&gt;&lt;/Route&gt;
+      &lt;/Routes&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Router
+</code></pre>
+<p>In our App.jsx we include Router.</p>
+<pre><code>import React from 'react'
+import Router from './router/Router';
+
+const app = () =&gt; {
+  return (
+    &lt;div className='section__padding section__margin'&gt;
+      &lt;Router /&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default app
+</code></pre>
+<p>For quick stylization we will install tailwind.</p>
+<pre><code>npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+</code></pre>
+<p>Modify tailwind.config.js to look our js and jsx files, as well as our blade files:</p>
+<pre><code>/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    &quot;./resources/**/*.blade.php&quot;,
+    &quot;./resources/**/*.js&quot;,
+    &quot;./resources/**/*.jsx&quot;,
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</code></pre>
+<p>Add tailwind directives to app.css</p>
+<pre><code>@tailwind base;
+@tailwind components;
+@tailwind utilities;
+</code></pre>
+<p>After that we can modify Index.jsx to return a table of taks and to have a button that takes us to Adding New Taks.</p>
+<pre><code>import React from 'react'
+import { Link } from 'react-router-dom'
+
+const Index = () =&gt; {
+  return (
+    &lt;div className='flex flex-col'&gt;
+        &lt;div className='flex flex-row w-full mb-2'&gt;
+            &lt;div className='flex justify-start w-1/2'&gt;
+                &lt;h1 className='text-2xl'&gt;CRUD TASKS&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;div className='flex w-1/2 justify-end'&gt;
+                &lt;Link to=&quot;/new_task&quot;&gt;
+                    &lt;button className='bg-green-400 p-2 rounded-md text-white'&gt;Add Task&lt;/button&gt;
+                &lt;/Link&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;div class=&quot;overflow-x-auto relative shadow-md sm:rounded-lg&quot;&gt;
+                 &lt;table class=&quot;w-full text-sm text-left text-gray-500 dark:text-gray-400&quot;&gt;
+                     &lt;thead class=&quot;text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400&quot;&gt;
+                         &lt;tr&gt;
+                             &lt;th scope=&quot;col&quot; className=&quot;py-3 px-6&quot;&gt;
+                                 Product name
+                             &lt;/th&gt;
+                             &lt;th scope=&quot;col&quot; className=&quot;py-3 px-6&quot;&gt;
+                                 Color
+                             &lt;/th&gt;
+                             &lt;th scope=&quot;col&quot; className=&quot;py-3 px-6&quot;&gt;
+                                 Category
+                             &lt;/th&gt;
+                             &lt;th scope=&quot;col&quot; className=&quot;py-3 px-6&quot;&gt;
+                                 Price
+                             &lt;/th&gt;
+                             &lt;th scope=&quot;col&quot; className=&quot;py-3 px-6&quot;&gt;
+                                 &lt;span className=&quot;sr-only&quot;&gt;Edit&lt;/span&gt;
+                             &lt;/th&gt;
+                         &lt;/tr&gt;
+                     &lt;/thead&gt;
+                     &lt;tbody&gt;
+                         &lt;tr className=&quot;bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600&quot;&gt;
+                             &lt;th scope=&quot;row&quot; className=&quot;py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white&quot;&gt;
+                                 Apple MacBook Pro 17&quot;
+                             &lt;/th&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 Sliver
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 Laptop
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 $2999
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6 text-right&quot;&gt;
+                                 &lt;a href=&quot;#&quot; className=&quot;font-medium text-blue-600 dark:text-blue-500 hover:underline&quot;&gt;Edit&lt;/a&gt;
+                             &lt;/td&gt;
+                         &lt;/tr&gt;
+                         &lt;tr className=&quot;bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600&quot;&gt;
+                             &lt;th scope=&quot;row&quot; className=&quot;py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white&quot;&gt;
+                                 Microsoft Surface Pro
+                             &lt;/th&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 White
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 Laptop PC
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 $1999
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6 text-right&quot;&gt;
+                                 &lt;a href=&quot;#&quot; className=&quot;font-medium text-blue-600 dark:text-blue-500 hover:underline&quot;&gt;Edit&lt;/a&gt;
+                             &lt;/td&gt;
+                         &lt;/tr&gt;
+                         &lt;tr className=&quot;bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600&quot;&gt;
+                             &lt;th scope=&quot;row&quot; className=&quot;py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white&quot;&gt;
+                                 Magic Mouse 2
+                             &lt;/th&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 Black
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 Accessories
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6&quot;&gt;
+                                 $99
+                             &lt;/td&gt;
+                             &lt;td className=&quot;py-4 px-6 text-right&quot;&gt;
+                                 &lt;a href=&quot;#&quot; className=&quot;font-medium text-blue-600 dark:text-blue-500 hover:underline&quot;&gt;Edit&lt;/a&gt;
+                             &lt;/td&gt;
+                         &lt;/tr&gt;
+                     &lt;/tbody&gt;
+                 &lt;/table&gt;
+             &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default Index
+</code></pre>
+<p>Next step is to define a route <code>new_task</code> inside Router.jsx. Don't forget to add a new component New.jsx inside components/tasks.</p>
+<pre><code>const Router = () =&gt; {
+  return (
+    &lt;div&gt;
+      &lt;Routes&gt;
+        &lt;Route path=&quot;/&quot; element={&lt;Index /&gt;} /&gt;
+        &lt;Route path=&quot;/new_task&quot; element={&lt;New /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+<p>Now we plan to create a new form inside New.jsx. In this form we will have three inputs name, description and file.</p>
+<pre><code>import axios from 'axios';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+const New = () =&gt; {
+    /* Navigate is used to return to list */
+    const navigate = useNavigate();
+    
+    /* useState Hooks for setting values of name, description and photo */
+    const [name, setName] = useState(&quot;&quot;)
+    const [description, setDescription] = useState(&quot;&quot;)
+    const [photo, setPhoto] = useState(null)
+
+    /* Handler for file */
+    const changeHandler = (event) =&gt; {
+        let file = event.target.files[0];
+        let limit = 1024*1024
+
+        if(file['size'] &gt; limit){
+            Swal.fire({
+                type: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong',
+                footer: 'Why do I have this error'
+            })
+        }
+        setPhoto(event.target.files[0])
+    }
+
+    /* onClick button function */
+    const createTask = async(event) =&gt;{
+        /* disabling redirect after submit */
+        event.preventDefault()
+        /* defining FormData and appending values */
+        const formData = new FormData()
+        
+        formData.append('name', name)
+        formData.append('description', description)
+        formData.append('photo', photo)
+
+        /* axios request to API with success and catch */
+        await axios.post(&quot;/api/add_task&quot;, formData)
+            .then(({data})=&gt; {
+                toast.fire({
+                    icon: 'success',
+                    title: &quot;Task added.&quot;
+                })
+                navigate(&quot;/&quot;)
+            })
+            .catch(({response})=&gt; {
+                toast.fire({
+                    icon: 'error',
+                    title: &quot;Task is not added.&quot;
+                })
+            })
+    }   
+
+    return (
+        &lt;div className=&quot;w-full&quot;&gt;
+            &lt;div className='flex flex-row w-full mb-2'&gt;
+                &lt;div className='flex justify-start w-1/2'&gt;
+                    &lt;h1 className='text-2xl'&gt;CRUD TASKS&lt;/h1&gt;
+                &lt;/div&gt;
+                &lt;div className='flex w-1/2 justify-end'&gt;
+                        &lt;button className='bg-green-400 p-2 rounded-md text-white mr-2'&gt;New Task&lt;/button&gt;
+                        &lt;button onClick={() =&gt; navigate(-1)} className='bg-blue-400 p-2 rounded-md text-white'&gt;Go back&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;form className=&quot;bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4&quot;&gt;
+                &lt;div className=&quot;mb-4&quot;&gt;
+                    &lt;label className=&quot;block text-gray-700 text-sm font-bold mb-2&quot; htmlFor=&quot;name&quot;&gt;
+                        Name
+                    &lt;/label&gt;
+                    &lt;input value={name} onChange={(event) =&gt; {setName(event.target.value)}} className=&quot;shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline&quot; id=&quot;name&quot; type=&quot;text&quot; placeholder=&quot;Name&quot; /&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;mb-4&quot;&gt;
+                    &lt;label className=&quot;block text-gray-700 text-sm font-bold mb-2&quot; htmlFor=&quot;description&quot;&gt;
+                        Description
+                    &lt;/label&gt;
+                    &lt;textarea value={description} onChange={(event) =&gt; {setDescription(event.target.value)}}  className=&quot;shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline&quot; id=&quot;description&quot; type=&quot;text&quot; placeholder=&quot;Description&quot; /&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;mb-4&quot;&gt;
+                    &lt;label className=&quot;block text-gray-700 text-sm font-bold mb-2&quot; htmlFor=&quot;photo&quot;&gt;
+                        Photo
+                    &lt;/label&gt;
+                    &lt;input onChange={changeHandler} className=&quot;shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline&quot; id=&quot;photo&quot; type=&quot;file&quot; placeholder=&quot;Photo&quot; /&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex items-center justify-end&quot;&gt;
+                    &lt;button onClick={(event) =&gt; createTask(event)}className=&quot;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline&quot; type=&quot;button&quot;&gt;
+                        Save
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+    )
+}
+
+export default New
+
+</code></pre>
+<p>If we want to use sweetalert2 we need to install it with <code>npm install sweetalert2</code> and define it inside index.js.</p>
+<pre><code>import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/dist/sweetalert2.css'
+window.Swal = Swal
+const toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProfressBar: true,
+})
+
+window.toast = toast
+
+</code></pre>
+<p>Now we move to creating first api endpoint and define route inside api.php (Don't forget to add Task model inside api.php).</p>
+<pre><code>Route::post('add_task', [TaskController::class, 'store'])-&gt;name('add_task');
+</code></pre>
+<p>Next we modify Task model and add fillables:</p>
+<pre><code>&lt;?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Task extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'photo',
+        'status',
+        'level',
+    ];
+}
+</code></pre>
+<p>We move to our TaskController and create all logic behind storing Task and image. We will use validate so we can include validator in the controller <code>use Illuminate\Support\Facades\Validator;</code></p>
+<p>Method store is created as:</p>
+<pre><code> public function store(Request $request)
+    {
+        /* Create object */
+        $task = new Task();
+        /* Assign attributes that are string */
+        $task-&gt;name = $request-&gt;name;
+        $task-&gt;description = $request-&gt;description;
+
+        $imagesName = [];
+        $response = [];
+
+        /* validate photo */
+        $validator = Validator::make($request-&gt;all(),
+            [
+                'photo' =&gt; 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            ]
+        );
+
+        if($validator-&gt;fails()) {
+            return response()-&gt;json([&quot;status&quot; =&gt; &quot;failed&quot;, &quot;message&quot; =&gt; &quot;Validation error&quot;, &quot;errors&quot; =&gt; $validator-&gt;errors()]);
+        }
+
+        if($request-&gt;has('photo')) {
+                /* create filename */
+                $filename = time().rand(1,10). '.'.$request-&gt;file('photo')-&gt;getClientOriginalExtension();
+
+                /* save inside public uploads*/
+                $request-&gt;file('photo')-&gt;move('uploads/', $filename);
+
+                $task-&gt;photo = $filename;
+
+              $response[&quot;status&quot;] = &quot;successs&quot;;
+              $response[&quot;message&quot;] = &quot;Success! image(s) uploaded&quot;;
+        }
+
+        else {
+            $response[&quot;status&quot;] = &quot;failed&quot;;
+            $response[&quot;message&quot;] = &quot;Failed! image(s) not uploaded&quot;;
+        }
+    
+        $task-&gt;save();
+        /* We returned response because we used this messages in testing with Insomnia (tool for api testing) but we can use these responses for our frontend, too, where we could use that messages and display them with sweetalert. */
+        return $response;
+    }
+</code></pre>
+<p>Next we will make api call for listing all our Tasks in Index.jsx. That will be GET api call on index method inside TaskController.</p>
+
+        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </body>
+    </html>
