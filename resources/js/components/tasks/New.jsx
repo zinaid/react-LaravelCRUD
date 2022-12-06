@@ -33,15 +33,14 @@ const New = () => {
         formData.append('name', name)
         formData.append('description', description)
         formData.append('photo', photo)
-        console.log(photo)
+
         await axios.post("/api/add_task", formData)
             .then(({data})=> {
                 toast.fire({
                     icon: 'success',
                     title: "Task added."
                 })
-                console.log(data)
-                // navigate("/")
+                navigate("/")
             })
             .catch(({response})=> {
                 toast.fire({

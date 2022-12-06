@@ -522,3 +522,14 @@ Method store is created as:
 ```
 
 Next we will make api call for listing all our Tasks in Index.jsx. That will be GET api call on index method inside TaskController.
+
+```
+public function index()
+    {
+        $tasks = Task::all();
+
+        return response()->json([
+            'tasks' => $tasks
+        ], 200);
+    }
+```

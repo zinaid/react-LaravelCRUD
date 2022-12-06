@@ -527,6 +527,15 @@ class Task extends Model
     }
 </code></pre>
 <p>Next we will make api call for listing all our Tasks in Index.jsx. That will be GET api call on index method inside TaskController.</p>
+<pre><code>public function index()
+    {
+        $tasks = Task::all();
+
+        return response()-&gt;json([
+            'tasks' =&gt; $tasks
+        ], 200);
+    }
+</code></pre>
 
         <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
         
