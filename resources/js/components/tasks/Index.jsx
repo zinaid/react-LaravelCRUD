@@ -1,21 +1,25 @@
 import React, { useEffect, useState} from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 const Index = () => {
 const [tasks, setTasks] = useState([]);
+const navigate = useNavigate();
 
-  useEffect(()=>{
+useEffect(()=>{
     getTasks()
-  })
+}, [])
   
 const getTasks = async() =>{
 
     await axios.get("/api/tasks")
         .then(({data})=> {
             setTasks(data.tasks)
-            // navigate("/")
         })
-}  
+}
+
+const editTaskNavigation = (id) => {
+    navigate('/edit_task/'+id);
+}
   return (
     <div className='flex flex-col'>
         <div className='flex flex-row w-full mb-2'>
@@ -61,7 +65,7 @@ const getTasks = async() =>{
                                     {item.photo}
                                 </td>
                                 <td className="py-4 px-6 text-right">
-                                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <button onClick={()=>editTaskNavigation(item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
                                 </td>
                             </tr>
                              )) : 'No data'

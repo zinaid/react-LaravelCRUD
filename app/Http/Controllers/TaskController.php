@@ -83,9 +83,12 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function show($id)
     {
-        //
+        $task = Task::find($id);
+        return response()->json([
+            'task' => $task
+        ], 200);
     }
 
     /**
@@ -106,9 +109,16 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
-        //
+        $task = Task::find($id); 
+        $task->name = $request->name;
+        $task->description = $request->description;
+        $task->save();
+
+        return response()->json([
+            'task' => $task
+        ], 200);
     }
 
     /**
