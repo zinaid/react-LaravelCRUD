@@ -655,6 +655,29 @@ export default Edit
     ], 200);
 }
 </code></pre>
+<p>Final CRUD operation is delete.</p>
+<p>First we will add another button in our table next to Edit.</p>
+<pre><code>&lt;td className=&quot;py-4 px-6 text-right&quot;&gt;
+    &lt;button onClick={()=&gt;editTaskNavigation(item.id)} className=&quot;font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2&quot;&gt;Edit&lt;/button&gt;
+    &lt;button onClick={()=&gt;deleteTask(item.id)} className=&quot;font-medium text-red-600 dark:text-red-500 hover:underline&quot;&gt;Delete&lt;/button&gt;
+&lt;/td&gt;
+</code></pre>
+<p>Then we need to define deleteTask() function.</p>
+<pre><code>const deleteTask = async() =&gt;{
+
+    await axios.delete(`/api/tasks/${id}`)
+        .then(({data})=&gt; {
+            setTasks(data.tasks)
+        })
+}
+</code></pre>
+<p>Then we create login in our Controller in method delete.</p>
+<pre><code>public function destroy($id)
+    {
+        $task = Task::findOrFail($id); 
+        $task-&gt;delete();
+    }
+</code></pre>
 
         <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
         

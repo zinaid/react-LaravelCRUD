@@ -667,3 +667,36 @@ And the logic inside controller.
     ], 200);
 }
 ```
+
+Final CRUD operation is delete.
+
+First we will add another button in our table next to Edit.
+
+```
+<td className="py-4 px-6 text-right">
+    <button onClick={()=>editTaskNavigation(item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2">Edit</button>
+    <button onClick={()=>deleteTask(item.id)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</button>
+</td>
+```
+
+Then we need to define deleteTask() function.
+
+```
+const deleteTask = async() =>{
+
+    await axios.delete(`/api/tasks/${id}`)
+        .then(({data})=> {
+            setTasks(data.tasks)
+        })
+}
+```
+
+Then we create login in our Controller in method delete.
+
+```
+public function destroy($id)
+    {
+        $task = Task::findOrFail($id); 
+        $task->delete();
+    }
+```

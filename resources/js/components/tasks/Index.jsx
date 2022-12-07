@@ -17,6 +17,24 @@ const getTasks = async() =>{
         })
 }
 
+const deleteTask = async(id) =>{
+
+    await axios.delete('api/tasks/'+id)
+        Swal.fire({
+            title: 'Are you sure',
+            text: "You can't revert",
+            icon: 'warning',
+            confirmButtonText: 'Yes, delete it'
+        })
+        .then(({data})=> {
+            toast.fire({
+                icon: 'success',
+                title: "Task deleted."
+            })
+            getTasks();
+        })
+}
+
 const editTaskNavigation = (id) => {
     navigate('/edit_task/'+id);
 }
@@ -65,7 +83,8 @@ const editTaskNavigation = (id) => {
                                     {item.photo}
                                 </td>
                                 <td className="py-4 px-6 text-right">
-                                    <button onClick={()=>editTaskNavigation(item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                                    <button onClick={()=>editTaskNavigation(item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2">Edit</button>
+                                    <button onClick={()=>deleteTask(item.id)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete</button>
                                 </td>
                             </tr>
                              )) : 'No data'
