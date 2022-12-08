@@ -18,22 +18,25 @@ const getTasks = async() =>{
 }
 
 const deleteTask = async(id) =>{
-
-    await axios.delete('api/tasks/'+id)
+    
         Swal.fire({
             title: 'Are you sure',
             text: "You can't revert",
             icon: 'warning',
+            showCancelButton: true,
             confirmButtonText: 'Yes, delete it'
         })
-        .then(({data})=> {
+        .then(function(result) {
+            if(result.value){
+            axios.delete('api/tasks/'+id)
             toast.fire({
                 icon: 'success',
                 title: "Task deleted."
             })
+            }
             getTasks();
         })
-}
+    }
 
 const editTaskNavigation = (id) => {
     navigate('/edit_task/'+id);
