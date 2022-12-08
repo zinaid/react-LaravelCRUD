@@ -663,13 +663,26 @@ export default Edit
 &lt;/td&gt;
 </code></pre>
 <p>Then we need to define deleteTask() function.</p>
-<pre><code>const deleteTask = async() =&gt;{
-
-    await axios.delete(`/api/tasks/${id}`)
-        .then(({data})=&gt; {
-            setTasks(data.tasks)
+<pre><code>const deleteTask = async(id) =&gt;{
+    
+        Swal.fire({
+            title: 'Are you sure',
+            text: &quot;You can't revert&quot;,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it'
         })
-}
+        .then(function(result) {
+            if(result.value){
+            axios.delete('api/tasks/'+id)
+            toast.fire({
+                icon: 'success',
+                title: &quot;Task deleted.&quot;
+            })
+            }
+            getTasks();
+        })
+    }
 </code></pre>
 <p>Then we create login in our Controller in method delete.</p>
 <pre><code>public function destroy($id)
@@ -678,6 +691,7 @@ export default Edit
         $task-&gt;delete();
     }
 </code></pre>
+<p>With this we have finished our CRUD app with Laravel and React.</p>
 
         <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
         

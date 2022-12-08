@@ -682,13 +682,26 @@ First we will add another button in our table next to Edit.
 Then we need to define deleteTask() function.
 
 ```
-const deleteTask = async() =>{
-
-    await axios.delete(`/api/tasks/${id}`)
-        .then(({data})=> {
-            setTasks(data.tasks)
+const deleteTask = async(id) =>{
+    
+        Swal.fire({
+            title: 'Are you sure',
+            text: "You can't revert",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it'
         })
-}
+        .then(function(result) {
+            if(result.value){
+            axios.delete('api/tasks/'+id)
+            toast.fire({
+                icon: 'success',
+                title: "Task deleted."
+            })
+            }
+            getTasks();
+        })
+    }
 ```
 
 Then we create login in our Controller in method delete.
@@ -700,3 +713,5 @@ public function destroy($id)
         $task->delete();
     }
 ```
+
+With this we have finished our CRUD app with Laravel and React.
